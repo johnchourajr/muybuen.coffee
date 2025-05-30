@@ -1,9 +1,9 @@
 // components/SearchInput.tsx
 import clsx from "clsx"
-import React, { useState, useEffect, useCallback } from "react"
-import { AnimatePresence, motion, useWillChange } from "framer-motion"
-import { useSearchParams, useRouter } from "next/navigation"
 import debounce from "lodash.debounce"
+import { AnimatePresence, motion, useWillChange } from "motion/react"
+import { useRouter, useSearchParams } from "next/navigation"
+import React, { useCallback, useEffect, useState } from "react"
 
 export const dynamic = "force-dynamic"
 

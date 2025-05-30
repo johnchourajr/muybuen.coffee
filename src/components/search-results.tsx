@@ -1,10 +1,9 @@
 "use client"
 import { ScrollXWrapper } from "@/components/scroll-x-wrapper"
-import { motion } from "framer-motion"
-import clsx from "clsx"
 import { Business } from "@/types/search.types"
-import { ResultTile } from "./search-result-tile"
+import clsx from "clsx"
 import Image from "next/image"
+import { ResultTile } from "./search-result-tile"
 
 export type SearchResultsProps = {
   searchResults: Business[] | null
@@ -79,7 +78,7 @@ export const SearchResults = ({ searchResults }: SearchResultsProps) => {
                 </ResultTile>
               )
             })
-          : ["", "", ""].map((_, index) => <ResultTile href="" key={index} />)}
+          : ["", "", ""].map((_, index) => <ResultTile key={index} />)}
       </ScrollXWrapper>
     </>
   )

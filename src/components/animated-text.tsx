@@ -1,10 +1,8 @@
 "use client"
 import clsx from "clsx"
-import { Headline } from "./headline"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import Link from "next/link"
-import { Result } from "postcss"
-import { Fragment } from "react"
+import { Headline } from "./headline"
 
 // a component that splits each character into a span
 export interface TextWrapProps {

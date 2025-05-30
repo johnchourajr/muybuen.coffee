@@ -2,6 +2,7 @@
 
 import PageHeader from "@/components/page-header"
 import { SearchContainer } from "@/components/search-container"
+import { Suspense } from "react"
 
 export default function FindPage() {
   return (
@@ -10,7 +11,9 @@ export default function FindPage() {
         Find Buen <br />
         Coffee
       </PageHeader>
-      <SearchContainer />
+      <Suspense fallback={<></>}>
+        <SearchContainer />
+      </Suspense>
     </>
   )
 }

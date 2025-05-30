@@ -1,11 +1,10 @@
+import { Layout } from "@/components/layout"
+import AppContextProvider from "@/contexts/appContext"
+import clsx from "clsx"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import localFont from "next/font/local"
 import "./globals.css"
-import clsx from "clsx"
-import { Layout } from "@/components/layout"
-import AuthContextProvider from "@/contexts/authContext"
-import AppContextProvider from "@/contexts/appContext"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
@@ -39,15 +38,11 @@ export default function RootLayout({
 }) {
   return (
     <AppContextProvider>
-      <AuthContextProvider>
-        <html lang="en">
-          <body
-            className={clsx(inter.variable, rulik.variable, "min-h-screen")}
-          >
-            <Layout>{children}</Layout>
-          </body>
-        </html>
-      </AuthContextProvider>
+      <html lang="en">
+        <body className={clsx(inter.variable, rulik.variable, "min-h-screen")}>
+          <Layout>{children}</Layout>
+        </body>
+      </html>
     </AppContextProvider>
   )
 }

@@ -1,9 +1,9 @@
 "use client"
 import recipesData from "@/data/recipes/recipes"
-import Link from "next/link"
-import { motion } from "framer-motion"
 import clsx from "clsx"
+import { motion } from "motion/react"
 import Image from "next/image"
+import Link from "next/link"
 import { ScrollXWrapper } from "./scroll-x-wrapper"
 
 export const RecipesList = () => {

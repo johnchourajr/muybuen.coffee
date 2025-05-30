@@ -2,19 +2,14 @@
 
 import clsx from "clsx"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { NavLink } from "../nav-link"
 import LogoIcon from "../svg/icon"
-import { usePathname } from "next/navigation"
-import { useContext } from "react"
-import { AuthContext } from "@/contexts/authContext"
 
 export interface NavProps {}
 
 export const Nav: React.FC<NavProps> = ({ ...extra }) => {
-  const { user, login, logout } = useContext(AuthContext)
   const router = usePathname()
-
-  // console.log({ user });
 
   const links = [
     {
@@ -52,8 +47,6 @@ export const Nav: React.FC<NavProps> = ({ ...extra }) => {
               </NavLink>
             )
           })}
-          {/* {!user && <button onClick={login}>Login/Signup</button>}
-          {user && <button onClick={logout}>Logout</button>} */}
         </div>
       </nav>
     </>
