@@ -1,15 +1,28 @@
 "use client";
 import { ScrollXWrapper } from "@/components/scroll-x-wrapper";
 import { AppContext } from "@/contexts/appContext";
-import { useContext } from "react";
+import { useVoteTallies } from "@/hooks/useVoteTallies";
+import { useContext, useMemo } from "react";
 import { ResultTile } from "./search-result-tile";
 import { BusinessCardContent } from "./ui/business-card-content";
 
 export const SearchResults = () => {
   const { searchResults } = useContext(AppContext);
 
-  // Filter results to only show high-rated businesses (rating > 4)
-  const results = searchResults?.filter((item) => item.rating > 4) || [];
+  // Memoize the filtered results to prevent recreating on every render
+  const results = useMemo(() => {
+    console.log("Filtering search results:", searchResults?.length);
+    return searchResults?.filter((item) => item.rating > 4) || [];
+  }, [searchResults]);
+
+  // Memoize aliases to prevent infinite database calls
+  const aliases = useMemo(() => {
+    console.log("Creating aliases array from results:", results.length);
+    return results.map((result) => result.alias);
+  }, [results]);
+
+  // Fetch vote tallies for all results
+  const { voteTallies, isLoading: talliesLoading } = useVoteTallies(aliases);
 
   return (
     <>
@@ -25,6 +38,9 @@ export const SearchResults = () => {
 
               // Create clean internal shop URL using the business alias (more SEO-friendly)
               const shopUrl = `/shop/${result.alias}`;
+
+              // Get vote tally for this shop
+              const voteTally = voteTallies[result.alias];
 
               return (
                 <ResultTile
@@ -46,6 +62,8 @@ export const SearchResults = () => {
                     size="md"
                     showImage={true}
                     showListBadge={true}
+                    voteTally={voteTally}
+                    showVoteTally={!talliesLoading}
                   />
                 </ResultTile>
               );

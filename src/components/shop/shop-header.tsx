@@ -1,6 +1,13 @@
 "use client";
 import { motion } from "motion/react";
-import { BusinessInfo, RatingDisplay, StatusBadge, TimeDisplay } from "../ui";
+import {
+  BusinessInfo,
+  RatingDisplay,
+  ShopListInfo,
+  StatusBadge,
+  TimeDisplay,
+} from "../ui";
+import { VotingButtons } from "../voting-buttons";
 
 interface ShopHeaderProps {
   name: string;
@@ -9,6 +16,8 @@ interface ShopHeaderProps {
   miles?: string | null;
   isOpenNow?: boolean;
   isClaimed?: boolean;
+  shopListInfo: ShopListInfo;
+  alias?: string;
   todayHours?: {
     start: string;
     end: string;
@@ -22,7 +31,9 @@ export const ShopHeader = ({
   miles,
   isOpenNow,
   isClaimed,
+  shopListInfo,
   todayHours,
+  alias,
 }: ShopHeaderProps) => {
   // Prepare business info items
   const businessInfoItems = [
@@ -48,7 +59,30 @@ export const ShopHeader = ({
     >
       <div className="flex items-start justify-between">
         <h1 className="text-4xl font-bold text-primary">{name}</h1>
-        <div className="flex items-center gap-2">
+        {/* Voting buttons */}
+        {alias && <VotingButtons alias={alias} className="justify-center" />}
+      </div>
+
+      <div className="flex items-start gap-3 text-primary/80 flex-col">
+        <div className="flex items-center space-x-2 text-primary/80 flex-wrap">
+          <RatingDisplay
+            rating={rating}
+            reviewCount={reviewCount}
+            showReviewCount={true}
+          />
+          <span className="text-primary/60">{"•"}</span>
+          {businessInfoItems.length > 0 && (
+            <BusinessInfo items={businessInfoItems} className="ml-2" />
+          )}
+        </div>
+        <div className="flex items-center space-x-2 text-primary/80 flex-wrap">
+          {shopListInfo.badge && (
+            <StatusBadge
+              variant={shopListInfo.badge.variant}
+              label={shopListInfo.badge.label}
+              icon={shopListInfo.badge.icon}
+            />
+          )}
           {isClaimed && (
             <StatusBadge variant="verified" label="Verified" icon="✓" />
           )}
@@ -59,17 +93,6 @@ export const ShopHeader = ({
             />
           )}
         </div>
-      </div>
-
-      <div className="flex items-center space-x-2 text-primary/80 flex-wrap">
-        <RatingDisplay
-          rating={rating}
-          reviewCount={reviewCount}
-          showReviewCount={true}
-        />
-        {businessInfoItems.length > 0 && (
-          <BusinessInfo items={businessInfoItems} className="ml-2" />
-        )}
       </div>
     </motion.div>
   );

@@ -1,13 +1,13 @@
-import type { Config } from "tailwindcss"
-import type { Levels } from "./src/components/headline"
-import type { BuenType } from "./src/lib/buen-type/generateBuenType"
+import type { Config } from "tailwindcss";
+import type { Levels } from "./src/components/headline";
+import type { BuenType } from "./src/lib/buen-type/generateBuenType";
 
-const defaultTheme = require("tailwindcss/defaultTheme")
+const defaultTheme = require("tailwindcss/defaultTheme");
 
 const {
   generateBuenTypeCustomProperties,
   generateBuenType,
-} = require("./src/lib/buen-type/") // Adjust the path as needed
+} = require("./src/lib/buen-type/"); // Adjust the path as needed
 
 const buenTypePlugin = function ({ addUtilities }: any) {
   const fluidTypeStyles = generateBuenType({
@@ -15,33 +15,33 @@ const buenTypePlugin = function ({ addUtilities }: any) {
       Levels,
     maxRatio: 1.3,
     minRatio: 1.2,
-  }) as BuenType
-  const customProperties = generateBuenTypeCustomProperties(fluidTypeStyles)
+  }) as BuenType;
+  const customProperties = generateBuenTypeCustomProperties(fluidTypeStyles);
 
-  const utilities = {} as any
+  const utilities = {} as any;
 
   for (const [property, value] of Object.entries(customProperties)) {
     utilities[`.${property}`] = {
       "--buen-font-size": value,
-    }
+    };
   }
 
   for (const [level, fontSize] of Object.entries(fluidTypeStyles)) {
     const letterSpacing = () => {
-      if (level === "sm") return "0"
-      if (level === "md") return "0"
-      return "-0.02em"
-    }
+      if (level === "sm") return "0";
+      if (level === "md") return "0";
+      return "-0.02em";
+    };
 
     utilities[`.text-buen-${level}`] = {
       fontSize,
       lineHeight: 1,
       letterSpacing: letterSpacing(),
-    }
+    };
   }
 
-  addUtilities(utilities, ["responsive", "hover"])
-}
+  addUtilities(utilities, ["responsive", "hover"]);
+};
 
 const colors = {
   primary: {
@@ -68,6 +68,10 @@ const colors = {
     50: "rgba(22, 22, 22, 0.5)",
     10: "rgba(22, 22, 22, 0.1)",
   },
+  red: {
+    DEFAULT: "rgb(255, 0, 0)",
+    50: "rgba(255, 0, 0, 0.5)",
+  },
   ground: {
     DEFAULT: "rgb(237, 238, 248)",
     50: "rgba(237, 238, 248, 0.5)",
@@ -76,7 +80,7 @@ const colors = {
     DEFAULT: "rgb(255, 255, 255)",
     50: "rgba(255, 255, 255, 0.5)",
   },
-}
+};
 
 const config: Config = {
   content: [
@@ -113,5 +117,5 @@ const config: Config = {
     },
   },
   darkMode: "media",
-}
-export default config
+};
+export default config;

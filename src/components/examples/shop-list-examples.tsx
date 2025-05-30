@@ -1,14 +1,36 @@
-"use client"
-import { BusinessCardContent, StatusBadge, getShopListStatus } from "../ui"
+"use client";
+import { BusinessCardContent, StatusBadge, getShopListStatus } from "../ui";
+
+// Mock vote tallies for testing
+const mockVoteTallies = {
+  "neat-coffee-costa-mesa": {
+    alias: "neat-coffee-costa-mesa",
+    upvotes: 8,
+    downvotes: 2,
+    totalVotes: 10,
+  },
+  "rad-coffee-long-beach-4": {
+    alias: "rad-coffee-long-beach-4",
+    upvotes: 3,
+    downvotes: 7,
+    totalVotes: 10,
+  },
+  "some-regular-shop": {
+    alias: "some-regular-shop",
+    upvotes: 5,
+    downvotes: 5,
+    totalVotes: 10,
+  },
+};
 
 /**
  * Examples of how to use the shop list features
  */
 export const ShopListExamples = () => {
   // Example shop aliases from your lists
-  const buenShop = "neat-coffee-costa-mesa" // From buenlist
-  const shitShop = "rad-coffee-long-beach-4" // From shitlist
-  const regularShop = "some-regular-shop" // Not on any list
+  const buenShop = "neat-coffee-costa-mesa"; // From buenlist
+  const shitShop = "rad-coffee-long-beach-4"; // From shitlist
+  const regularShop = "some-regular-shop"; // Not on any list
 
   return (
     <div className="p-8 space-y-8">
@@ -28,7 +50,7 @@ export const ShopListExamples = () => {
         <h3 className="text-lg font-semibold">Programmatic Examples:</h3>
         <div className="space-y-2">
           {[buenShop, shitShop, regularShop].map((alias) => {
-            const shopInfo = getShopListStatus(alias)
+            const shopInfo = getShopListStatus(alias);
             return (
               <div key={alias} className="flex items-center gap-4">
                 <span className="w-48 text-sm font-mono">{alias}</span>
@@ -41,7 +63,7 @@ export const ShopListExamples = () => {
                   />
                 )}
               </div>
-            )
+            );
           })}
         </div>
       </div>
@@ -61,6 +83,8 @@ export const ShopListExamples = () => {
               shopAlias="neat-coffee-costa-mesa"
               showImage={false}
               size="sm"
+              voteTally={mockVoteTallies["neat-coffee-costa-mesa"]}
+              showVoteTally={true}
             />
           </div>
 
@@ -75,6 +99,8 @@ export const ShopListExamples = () => {
               shopAlias="rad-coffee-long-beach-4"
               showImage={false}
               size="sm"
+              voteTally={mockVoteTallies["rad-coffee-long-beach-4"]}
+              showVoteTally={true}
             />
           </div>
 
@@ -89,10 +115,12 @@ export const ShopListExamples = () => {
               shopAlias="some-regular-shop"
               showImage={false}
               size="sm"
+              voteTally={mockVoteTallies["some-regular-shop"]}
+              showVoteTally={true}
             />
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

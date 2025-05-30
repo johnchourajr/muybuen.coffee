@@ -1,5 +1,6 @@
 "use client";
 import { Business } from "@/types/search.types";
+import { getShopListStatus } from "@/utils/shop-lists";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { ContactDetails } from "./shop/contact-details";
@@ -65,9 +66,15 @@ export const ShopTemplate = ({ shop }: ShopTemplateProps) => {
     (h) => h.day === new Date().getDay(),
   );
 
+  const shopListInfo = shop.alias
+    ? getShopListStatus(shop.alias)
+    : { status: null };
+
+  console.log(shopListInfo);
+
   return (
     <div className="min-h-screen">
-      <div className="grid-container py-8">
+      <div className="grid-container py-2 md:py-0">
         <div className="col-span-full flex flex-col gap-6">
           {/* Back button */}
           <motion.div
@@ -104,6 +111,8 @@ export const ShopTemplate = ({ shop }: ShopTemplateProps) => {
             miles={miles}
             isOpenNow={isOpenNow}
             isClaimed={shop.is_claimed}
+            shopListInfo={shopListInfo}
+            alias={shop.alias}
             todayHours={
               todayHours
                 ? {
@@ -134,6 +143,7 @@ export const ShopTemplate = ({ shop }: ShopTemplateProps) => {
               <ShopActions
                 yelpUrl={shop.url}
                 displayAddress={shop.location.display_address}
+                alias={shop.alias}
               />
             </motion.div>
 

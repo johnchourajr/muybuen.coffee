@@ -1,25 +1,29 @@
-"use client"
-import { getShopListStatus } from "@/utils/shop-lists"
-import clsx from "clsx"
-import Image from "next/image"
-import { BusinessInfo } from "./business-info"
-import { RatingDisplay } from "./rating-display"
-import { StatusBadge } from "./status-badge"
+"use client";
+import { VoteTally } from "@/hooks/useVoteTallies";
+import { getShopListStatus } from "@/utils/shop-lists";
+import clsx from "clsx";
+import Image from "next/image";
+import { BusinessInfo } from "./business-info";
+import { RatingDisplay } from "./rating-display";
+import { StatusBadge } from "./status-badge";
+import { VoteTallyDisplay } from "./vote-tally-display";
 
 export interface BusinessCardContentProps {
-  name: string
-  rating: number
-  reviewCount: number
-  address?: string[]
-  distance?: string
-  imageUrl?: string
-  imageAlt?: string
-  buentag?: string
-  shopAlias?: string
-  className?: string
-  size?: "sm" | "md" | "lg"
-  showImage?: boolean
-  showListBadge?: boolean
+  name: string;
+  rating: number;
+  reviewCount: number;
+  address?: string[];
+  distance?: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  buentag?: string;
+  shopAlias?: string;
+  className?: string;
+  size?: "sm" | "md" | "lg";
+  showImage?: boolean;
+  showListBadge?: boolean;
+  voteTally?: VoteTally;
+  showVoteTally?: boolean;
 }
 
 export const BusinessCardContent = ({
@@ -36,6 +40,8 @@ export const BusinessCardContent = ({
   size = "md",
   showImage = true,
   showListBadge = true,
+  voteTally,
+  showVoteTally = true,
 }: BusinessCardContentProps) => {
   const sizeClasses = {
     sm: {
@@ -53,17 +59,17 @@ export const BusinessCardContent = ({
       padding: "md:py-8 py-6 md:px-10 px-7",
       imageHeight: "h-64",
     },
-  }
+  };
 
-  const currentSize = sizeClasses[size]
+  const currentSize = sizeClasses[size];
 
   const shopListInfo = shopAlias
     ? getShopListStatus(shopAlias)
-    : { status: null }
+    : { status: null };
 
   const businessInfoItems = [
     ...(distance ? [{ label: "", value: distance }] : []),
-  ]
+  ];
 
   return (
     <div className={clsx("flex flex-col h-full", className)}>
@@ -128,7 +134,7 @@ export const BusinessCardContent = ({
         )}
 
         {address && (
-          <p className="mb-2">
+          <p className="">
             {address.map((item, i) => (
               <span key={i}>{item} </span>
             ))}
@@ -146,7 +152,9 @@ export const BusinessCardContent = ({
             <BusinessInfo items={businessInfoItems} orientation="vertical" />
           )}
         </div>
+
+        <VoteTallyDisplay tally={voteTally} size="sm" className="mt-2" />
       </div>
     </div>
-  )
-}
+  );
+};

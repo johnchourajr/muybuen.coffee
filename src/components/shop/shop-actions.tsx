@@ -1,12 +1,17 @@
-"use client"
-import { motion } from "motion/react"
+"use client";
+import { motion } from "motion/react";
 
 interface ShopActionsProps {
-  yelpUrl: string
-  displayAddress: string[]
+  yelpUrl: string;
+  displayAddress: string[];
+  alias?: string;
 }
 
-export const ShopActions = ({ yelpUrl, displayAddress }: ShopActionsProps) => {
+export const ShopActions = ({
+  yelpUrl,
+  displayAddress,
+  alias,
+}: ShopActionsProps) => {
   return (
     <div className="flex flex-col space-y-3">
       <motion.a
@@ -33,5 +38,5 @@ export const ShopActions = ({ yelpUrl, displayAddress }: ShopActionsProps) => {
         Get Directions ↗
       </motion.a>
     </div>
-  )
-}
+  );
+};

@@ -1,15 +1,15 @@
-"use client"
-import clsx from "clsx"
-import { AnimatePresence, motion, PanInfo } from "motion/react"
-import Image from "next/image"
-import { useCallback, useEffect, useState } from "react"
+"use client";
+import clsx from "clsx";
+import { AnimatePresence, motion, PanInfo } from "motion/react";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
 
 interface PhotoCarouselProps {
-  photos: string[]
-  shopName: string
-  buentag?: "buen" | "shitlist"
-  autoplayInterval?: number // in milliseconds, default 4000
-  enableAutoplay?: boolean // default true
+  photos: string[];
+  shopName: string;
+  buentag?: "buen" | "shitlist";
+  autoplayInterval?: number; // in milliseconds, default 4000
+  enableAutoplay?: boolean; // default true
 }
 
 export const PhotoCarousel = ({
@@ -19,35 +19,36 @@ export const PhotoCarousel = ({
   autoplayInterval = 4000,
   enableAutoplay = true,
 }: PhotoCarouselProps) => {
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
-  const [isHovered, setIsHovered] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const [direction, setDirection] = useState(0) // Track swipe direction
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [direction, setDirection] = useState(0); // Track swipe direction
 
   const nextPhoto = useCallback(() => {
-    setDirection(1)
-    setCurrentPhotoIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1))
-  }, [photos.length])
+    setDirection(1);
+    setCurrentPhotoIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
+  }, [photos.length]);
 
   const previousPhoto = useCallback(() => {
-    setDirection(-1)
-    setCurrentPhotoIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1))
-  }, [photos.length])
+    setDirection(-1);
+    setCurrentPhotoIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
+  }, [photos.length]);
 
   const goToPhoto = useCallback(
     (index: number) => {
-      setDirection(index > currentPhotoIndex ? 1 : -1)
-      setCurrentPhotoIndex(index)
+      setDirection(index > currentPhotoIndex ? 1 : -1);
+      setCurrentPhotoIndex(index);
     },
     [currentPhotoIndex],
-  )
+  );
 
   // Autoplay functionality
   useEffect(() => {
-    if (!enableAutoplay || photos.length <= 1 || isHovered || isDragging) return
+    if (!enableAutoplay || photos.length <= 1 || isHovered || isDragging)
+      return;
 
-    const interval = setInterval(nextPhoto, autoplayInterval)
-    return () => clearInterval(interval)
+    const interval = setInterval(nextPhoto, autoplayInterval);
+    return () => clearInterval(interval);
   }, [
     enableAutoplay,
     photos.length,
@@ -55,41 +56,41 @@ export const PhotoCarousel = ({
     isDragging,
     nextPhoto,
     autoplayInterval,
-  ])
+  ]);
 
   // Handle drag gestures
   const handleDragEnd = (
     event: MouseEvent | TouchEvent | PointerEvent,
     info: PanInfo,
   ) => {
-    setIsDragging(false)
-    const threshold = 50
+    setIsDragging(false);
+    const threshold = 50;
 
     if (info.offset.x > threshold) {
-      setDirection(-1)
-      previousPhoto()
+      setDirection(-1);
+      previousPhoto();
     } else if (info.offset.x < -threshold) {
-      setDirection(1)
-      nextPhoto()
+      setDirection(1);
+      nextPhoto();
     }
-  }
+  };
 
   // Handle click to advance
   const handleImageClick = (event: React.MouseEvent) => {
-    if (isDragging) return
+    if (isDragging) return;
 
-    const rect = event.currentTarget.getBoundingClientRect()
-    const clickX = event.clientX - rect.left
-    const centerX = rect.width / 2
+    const rect = event.currentTarget.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const centerX = rect.width / 2;
 
     if (clickX > centerX) {
-      setDirection(1)
-      nextPhoto()
+      setDirection(1);
+      nextPhoto();
     } else {
-      setDirection(-1)
-      previousPhoto()
+      setDirection(-1);
+      previousPhoto();
     }
-  }
+  };
 
   return (
     <div
@@ -152,22 +153,6 @@ export const PhotoCarousel = ({
           </motion.div>
         </AnimatePresence>
 
-        {buentag && (
-          <motion.div
-            className={clsx(
-              "absolute top-4 right-4 px-4 py-2 rounded-full text-sm font-bold",
-              buentag === "buen" && "bg-green-500 text-white shadow-lg",
-              buentag === "shitlist" && "bg-red-500 text-white shadow-lg",
-            )}
-            initial={{ opacity: 0, scale: 0.8, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.3 }}
-            whileHover={{ scale: 1.05 }}
-          >
-            {buentag === "buen" ? "✨ Buen!" : "⚠️ Shitlist"}
-          </motion.div>
-        )}
-
         {/* Progress indicator for autoplay */}
         {enableAutoplay && photos.length > 1 && !isHovered && !isDragging && (
           <motion.div
@@ -213,5 +198,5 @@ export const PhotoCarousel = ({
         </motion.div>
       )}
     </div>
-  )
-}
+  );
+};

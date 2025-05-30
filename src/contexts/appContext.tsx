@@ -61,12 +61,6 @@ const AppContextProvider = ({ children }: { children: React.ReactNode }) => {
     apiEnabledAutoComplete,
     apiEnabledYelp,
     apiEnabledGoogle,
-    setApiCountAutocomplete,
-    setApiCountYelp,
-    setApiCountGoogle,
-    setApiEnabledAutoComplete,
-    setApiEnabledYelp,
-    setApiEnabledGoogle,
   ]);
 
   const context = {
