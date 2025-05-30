@@ -20,6 +20,7 @@ https://your-domain.com/api
 - **Database**: 50 requests per minute per IP
 - **Search (Yelp)**: 30 requests per minute per IP
 - **Search (Google)**: 50-100 requests per minute per IP (varies by endpoint)
+- **Business Details**: 60 requests per minute per IP
 
 ---
 
@@ -112,7 +113,59 @@ Searches for coffee shops using Yelp API with custom categorization.
 - **Distance Sorting**: Results sorted by distance within each category
 - **Caching**: Results cached for 5 minutes
 
-### 2. Google Places Autocomplete
+### 2. Business Details
+
+**GET** `/business/{id}`
+
+Gets detailed information about a specific business by Yelp business ID or alias.
+
+#### Parameters
+
+- `id` (required): Yelp business ID or business alias (e.g., "blue-bottle-coffee-san-francisco")
+
+#### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "business_id",
+    "alias": "business-alias",
+    "name": "Coffee Shop Name",
+    "image_url": "https://...",
+    "url": "https://yelp.com/...",
+    "rating": 4.5,
+    "review_count": 123,
+    "categories": [...],
+    "location": {...},
+    "coordinates": {...},
+    "photos": [...],
+    "hours": [...],
+    "phone": "+1234567890",
+    "display_phone": "(123) 456-7890",
+    "price": "$$",
+    "is_closed": false,
+    "transactions": ["pickup", "delivery"]
+  }
+}
+```
+
+#### Features
+
+- **Comprehensive Details**: Full business information from Yelp
+- **Flexible ID**: Accepts both business ID and alias for convenient access
+- **SEO-Friendly URLs**: Use alias for clean, readable URLs
+- **Caching**: Results cached for 10 minutes
+- **Rate Limited**: 60 requests per minute per IP
+
+#### Error Responses
+
+- `400` - Invalid business ID/alias
+- `404` - Business not found
+- `429` - Rate limit exceeded
+- `500` - Yelp API error
+
+### 3. Google Places Autocomplete
 
 **GET** `/search/googleautocomplete?input={input}`
 
@@ -143,7 +196,7 @@ Provides location autocomplete suggestions.
 }
 ```
 
-### 3. Google Places Search
+### 4. Google Places Search
 
 **GET** `/search/google?lat={lat}&lng={lng}&radius={radius}`
 
@@ -181,7 +234,7 @@ Searches for coffee shops near specific coordinates.
 }
 ```
 
-### 4. Google Place Details
+### 5. Google Place Details
 
 **GET** `/search/googleplacedetail?place_id={place_id}`
 
@@ -273,62 +326,46 @@ All API responses follow this format:
 
 - ✅ Input validation on all endpoints
 - ✅ Rate limiting per IP address
-- ✅ Environment variable validation
 - ✅ SQL injection protection (parameterized queries)
+- ✅ Environment variable validation
+- ✅ API key security (server-side only)
 
 ### Performance
 
 - ✅ Response caching (5-10 minutes)
-- ✅ Efficient database queries
-- ✅ Connection pooling
-- ✅ Memory-based cache cleanup
+- ✅ Optimized database queries
+- ✅ Efficient error handling
+- ✅ Memory-based rate limiting
 
-### Error Handling
+### Data Quality
 
-- ✅ Comprehensive error responses
-- ✅ External API error mapping
-- ✅ Graceful degradation
-- ✅ Detailed logging
-
-### Developer Experience
-
-- ✅ TypeScript types for all endpoints
-- ✅ Consistent response format
-- ✅ Clear error messages
-- ✅ Comprehensive documentation
+- ✅ Smart coffee shop categorization
+- ✅ Blacklist filtering
+- ✅ Distance-based sorting
+- ✅ Comprehensive business data
 
 ---
 
-## 🧪 Testing
+## 📱 Usage Examples
 
-### Example Requests
-
-#### Search for coffee in NYC
+### Search for coffee shops
 
 ```bash
-curl "https://your-domain.com/api/search/yelp?location=New%20York,%20NY&limit=10"
+curl "https://your-domain.com/api/search/yelp?location=San Francisco, CA"
 ```
 
-#### Get autocomplete suggestions
+### Get business details
 
 ```bash
-curl "https://your-domain.com/api/search/googleautocomplete?input=san%20francisco"
+curl "https://your-domain.com/api/business/blue-bottle-coffee-san-francisco"
 ```
 
-#### Create/update user
+### Location autocomplete
 
 ```bash
-curl -X POST "https://your-domain.com/api/database/add" \
-  -H "Content-Type: application/json" \
-  -d '{"id":"user123","email":"user@example.com"}'
+curl "https://your-domain.com/api/search/googleautocomplete?input=San Fran"
 ```
 
 ---
 
-## ⚠️ Important Notes
-
-1. **API Keys**: Keep all API keys in environment variables, never in client-side code
-2. **Rate Limits**: Monitor your usage to avoid hitting external API limits
-3. **Caching**: Results are cached to improve performance and reduce API costs
-4. **Error Handling**: Always check the `success` field in responses
-5. **Security**: The database route removes the `NEXT_PUBLIC_` prefix from environment variables for security
+_Last updated: December 2024_

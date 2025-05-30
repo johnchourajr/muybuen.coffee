@@ -10,6 +10,33 @@ export type ResultTileProps = {
   uid?: string
 }
 
+/**
+ * ResultTile - A reusable tile component that can contain any content
+ *
+ * Example usage with new smaller components:
+ *
+ * <ResultTile href="/shop/example">
+ *   <BusinessCardContent
+ *     name="Coffee Shop"
+ *     rating={4.5}
+ *     reviewCount={123}
+ *     address={["123 Main St", "New York, NY"]}
+ *     distance="0.5 miles"
+ *     imageUrl="/image.jpg"
+ *     buentag="Special Tag"
+ *   />
+ * </ResultTile>
+ *
+ * Or build custom content using smaller components:
+ * <ResultTile>
+ *   <div className="p-6">
+ *     <h3>Custom Title</h3>
+ *     <RatingDisplay rating={4.5} reviewCount={100} />
+ *     <StatusBadge variant="verified" label="Verified" />
+ *     <BusinessInfo items={[{label: "Distance", value: "1 mile"}]} />
+ *   </div>
+ * </ResultTile>
+ */
 export const ResultTile = ({
   children,
   className,
@@ -44,11 +71,13 @@ export const ResultTile = ({
 
   if (href) {
     const MotionLink = motion(Link)
+    const isExternal = href.startsWith("http")
+
     return (
       <MotionLink
         href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
         className={commonClassName}
         {...animatedProps}
         {...extra}

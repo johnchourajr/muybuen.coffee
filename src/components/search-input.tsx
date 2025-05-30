@@ -1,40 +1,42 @@
 // components/SearchInput.tsx
-import clsx from "clsx"
-import debounce from "lodash.debounce"
-import { AnimatePresence, motion, useWillChange } from "motion/react"
-import { useRouter, useSearchParams } from "next/navigation"
-import React, { useCallback, useEffect, useState } from "react"
+import { AppContext } from "@/contexts/appContext";
+import clsx from "clsx";
+import debounce from "lodash.debounce";
+import { AnimatePresence, motion, useWillChange } from "motion/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic";
 
 type Prediction = {
-  description: string
-}
+  description: string;
+};
 
 type SearchFormProps = {
-  onSearch: (location: string) => void
-  number?: number
-}
+  onSearch: (location: string) => void;
+  number?: number;
+};
 
 const SearchInput = ({ onSearch, number }: SearchFormProps) => {
-  const ref = React.useRef<HTMLDivElement>(null)
-  const willChange = useWillChange()
+  const ref = React.useRef<HTMLDivElement>(null);
+  const willChange = useWillChange();
 
-  const [input, setInput] = useState<string>("")
-  const [predictions, setPredictions] = useState<Prediction[]>([])
-  const [isInputFocused, setIsInputFocused] = useState<boolean>(false)
+  const [input, setInput] = useState<string>("");
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
+  const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
 
-  const router = useRouter()
-  const query = useSearchParams()
-  const param = query.get("find")
+  const router = useRouter();
+  const query = useSearchParams();
+  const param = query.get("find");
+  const { searchResults } = useContext(AppContext);
 
   useEffect(() => {
-    const findParam = param as string
+    const findParam = param as string;
     if (findParam) {
-      setInput(findParam)
-      onSearch(findParam)
+      setInput(findParam);
+      onSearch(findParam);
     }
-  }, [])
+  }, []);
 
   const fetchPredictions = async (inputValue: string) => {
     try {
@@ -42,73 +44,73 @@ const SearchInput = ({ onSearch, number }: SearchFormProps) => {
         `/api/search/googleautocomplete?input=${encodeURIComponent(
           inputValue,
         )}`,
-      )
+      );
       if (!response.ok) {
-        throw new Error(`Error: ${response.status}`)
+        throw new Error(`Error: ${response.status}`);
       }
-      const data = await response.json()
-      setPredictions(data.data.predictions)
+      const data = await response.json();
+      setPredictions(data.data.predictions);
     } catch (error) {
       if (error instanceof Error) {
-        console.error(error.message)
+        console.error(error.message);
       }
-      setPredictions([])
+      setPredictions([]);
     }
-  }
+  };
 
   const debouncedFetchPredictions = useCallback(
     debounce(fetchPredictions, 300),
     [],
-  )
+  );
 
   useEffect(() => {
     if (input.length >= 3) {
-      debouncedFetchPredictions(input)
+      debouncedFetchPredictions(input);
     } else {
-      setPredictions([])
+      setPredictions([]);
     }
 
     return () => {
-      debouncedFetchPredictions.cancel()
-    }
-  }, [input, debouncedFetchPredictions])
+      debouncedFetchPredictions.cancel();
+    };
+  }, [input, debouncedFetchPredictions]);
 
   const handlePredictionSelect = (prediction: Prediction) => {
-    setInput(prediction.description)
-    setPredictions([])
-    setIsInputFocused(false) // Remove focus when a prediction is selected
-    router.push(`/?find=${encodeURIComponent(prediction.description)}`)
-    onSearch(prediction.description)
-  }
+    setInput(prediction.description);
+    setPredictions([]);
+    setIsInputFocused(false); // Remove focus when a prediction is selected
+    router.push(`/?find=${encodeURIComponent(prediction.description)}`);
+    onSearch(prediction.description);
+  };
 
   const handleWrapperBlur = (event: React.FocusEvent<HTMLDivElement>) => {
     if (!ref?.current?.contains(event.relatedTarget)) {
-      setIsInputFocused(false)
+      setIsInputFocused(false);
     }
-  }
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value)
-    setIsInputFocused(true)
-  }
+    setInput(event.target.value);
+    setIsInputFocused(true);
+  };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      event.preventDefault() // Prevent the default action for Enter key
+      event.preventDefault(); // Prevent the default action for Enter key
       if (predictions.length > 0) {
         // If there are predictions, select the first one
-        handlePredictionSelect(predictions[0])
+        handlePredictionSelect(predictions[0]);
       } else {
         // Otherwise, directly use the input for search
-        router.push(`/?find=${encodeURIComponent(input)}`)
-        onSearch(input)
-        setIsInputFocused(false) // Optionally, remove focus from the input
+        router.push(`/?find=${encodeURIComponent(input)}`);
+        onSearch(input);
+        setIsInputFocused(false); // Optionally, remove focus from the input
       }
     }
     if (event.key === "Escape") {
-      setIsInputFocused(false)
+      setIsInputFocused(false);
     }
-  }
+  };
 
   return (
     <motion.div
@@ -121,7 +123,7 @@ const SearchInput = ({ onSearch, number }: SearchFormProps) => {
       style={{ willChange }}
     >
       <AnimatePresence>
-        {number && (
+        {searchResults && searchResults?.length > 0 && (
           <motion.div className="absolute text-xs right-0 h-full flex items-center px-4 opacity-50">
             <p className="">{number} results</p>
           </motion.div>
@@ -138,7 +140,7 @@ const SearchInput = ({ onSearch, number }: SearchFormProps) => {
           "w-full p-3 px-5 pr-24 border-0 focus:ring-0 focus:outline-none text-xl bg-[transparent]",
           "placeholder:text-tertiary",
         )}
-        autoFocus
+        autoFocus={!searchResults || searchResults?.length === 0}
       />
       <AnimatePresence>
         {isInputFocused && predictions.length > 0 && (
@@ -170,7 +172,7 @@ const SearchInput = ({ onSearch, number }: SearchFormProps) => {
         )}
       </AnimatePresence>
     </motion.div>
-  )
-}
+  );
+};
 
-export default SearchInput
+export default SearchInput;
