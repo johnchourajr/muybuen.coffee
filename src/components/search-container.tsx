@@ -2,6 +2,7 @@
 import SearchInput from "@/components/search-input";
 import { SearchResults } from "@/components/search-results";
 import { AppContext } from "@/contexts/appContext";
+import { apiUrls } from "@/lib/url-utils";
 import { SearchResult } from "@/types/search.types";
 import { useContext } from "react";
 
@@ -10,7 +11,7 @@ export const SearchContainer = () => {
 
   const handleSearch = async (location: string) => {
     try {
-      const response = await fetch(`/api/search/yelp?location=${location}`);
+      const response = await fetch(apiUrls.search.yelp(location));
       if (!response.ok) {
         throw new Error("Search failed");
       }

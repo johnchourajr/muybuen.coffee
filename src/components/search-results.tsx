@@ -12,6 +12,8 @@ export const SearchResults = () => {
   // Memoize the filtered results to prevent recreating on every render
   const results = useMemo(() => {
     console.log("Filtering search results:", searchResults?.length);
+    // Server-side already handles comprehensive scoring and ordering
+    // We only filter by rating here as an additional quality gate
     return searchResults?.filter((item) => item.rating > 4) || [];
   }, [searchResults]);
 
@@ -21,7 +23,7 @@ export const SearchResults = () => {
     return results.map((result) => result.alias);
   }, [results]);
 
-  // Fetch vote tallies for all results
+  // Fetch vote tallies for display purposes (scoring is done server-side)
   const { voteTallies, isLoading: talliesLoading } = useVoteTallies(aliases);
 
   return (

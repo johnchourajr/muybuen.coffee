@@ -1,16 +1,11 @@
 import { ShopTemplate } from "@/components/shop.template";
+import { apiUrls } from "@/lib/url-utils";
 import { Business } from "@/types/search.types";
 
 // Function to get shop data from our API
 const getShopData = async (id: string): Promise<Business | null> => {
   try {
-    // Use the production domain directly for production, localhost for development
-    const baseUrl =
-      process.env.NODE_ENV === "production"
-        ? "https://muybuen.coffee" // Your production domain
-        : "http://localhost:3000";
-
-    const response = await fetch(`${baseUrl}/api/business/${id}`, {
+    const response = await fetch(apiUrls.business(id), {
       cache: "force-cache", // Cache the response
     });
 

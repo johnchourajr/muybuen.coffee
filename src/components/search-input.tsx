@@ -1,5 +1,8 @@
+"use client";
+
 // components/SearchInput.tsx
 import { AppContext } from "@/contexts/appContext";
+import { apiUrls } from "@/lib/url-utils";
 import clsx from "clsx";
 import debounce from "lodash.debounce";
 import { AnimatePresence, motion, useWillChange } from "motion/react";
@@ -41,9 +44,7 @@ const SearchInput = ({ onSearch, number }: SearchFormProps) => {
   const fetchPredictions = async (inputValue: string) => {
     try {
       const response = await fetch(
-        `/api/search/googleautocomplete?input=${encodeURIComponent(
-          inputValue,
-        )}`,
+        apiUrls.search.googleAutocomplete(inputValue),
       );
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
