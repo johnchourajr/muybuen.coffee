@@ -1,45 +1,46 @@
-import { ShopTemplate } from "@/components/shop.template"
-import { Business } from "@/types/search.types"
+import { ShopTemplate } from "@/components/shop.template";
+import { Business } from "@/types/search.types";
 
 // Function to get shop data from our API
 const getShopData = async (id: string): Promise<Business | null> => {
   try {
-    const response = await fetch(
-      `${
-        process.env.NEXTAUTH_URL || "http://localhost:3000"
-      }/api/business/${id}`,
-      {
-        cache: "force-cache", // Cache the response
-      },
-    )
+    // Use the production domain directly for production, localhost for development
+    const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? "https://muybuen.coffee" // Your production domain
+        : "http://localhost:3000";
+
+    const response = await fetch(`${baseUrl}/api/business/${id}`, {
+      cache: "force-cache", // Cache the response
+    });
 
     if (!response.ok) {
-      console.error("Failed to fetch business data:", response.status)
-      return null
+      console.error("Failed to fetch business data:", response.status);
+      return null;
     }
 
-    const result = await response.json()
+    const result = await response.json();
 
     if (!result.success) {
-      console.error("API returned error:", result.error)
-      return null
+      console.error("API returned error:", result.error);
+      return null;
     }
 
-    return result.data
+    return result.data;
   } catch (error) {
-    console.error("Failed to fetch shop data:", error)
-    return null
+    console.error("Failed to fetch shop data:", error);
+    return null;
   }
-}
+};
 
 export default async function ShopPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }) {
   // Await params before accessing properties
-  const { id } = await params
-  const shop = await getShopData(id)
+  const { id } = await params;
+  const shop = await getShopData(id);
 
   if (!shop) {
     return (
@@ -49,8 +50,8 @@ export default async function ShopPage({
           <p className="text-gray-600">Unable to load shop details.</p>
         </div>
       </div>
-    )
+    );
   }
 
-  return <ShopTemplate shop={shop} />
+  return <ShopTemplate shop={shop} />;
 }
