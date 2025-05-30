@@ -1,45 +1,61 @@
 # typical gitignore file for javascript projects
 # http://www.toptal.com/developers/gitignore/api/node
 
-# dependencies
-node_modules
-
-# testing
-coverage
-
-# production
-build
-.next
-
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# local env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Log files
+# Dependencies
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-```
+# Next.js
+.next/
+out/
+build/
 
-## ESLint
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-- [ESLint](https://eslint.org/) is a tool for identifying and reporting on patterns found in ECMAScript/JavaScript code, with the goal of making code more consistent and avoiding bugs.
-- [Airbnb JavaScript Style Guide](
+# Testing
+coverage/
+
+# Build outputs
+dist/
+*.tsbuildinfo
+output.css
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache

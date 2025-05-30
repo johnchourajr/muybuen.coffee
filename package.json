@@ -2,12 +2,19 @@
   "name": "muybuen.coffee",
   "version": "0.1.0",
   "private": true,
+  "description": "A modern coffee website built with Next.js and TypeScript",
+  "author": "John Choura",
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write ."
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf .next && rm -rf out"
   },
   "dependencies": {
     "@muybuen/retool-db-react": "^1.1.24",
