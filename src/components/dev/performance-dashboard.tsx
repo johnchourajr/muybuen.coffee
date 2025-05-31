@@ -4,6 +4,7 @@ import {
   PerformanceMetrics,
   performanceMonitor,
 } from "@/lib/performance-monitor";
+import clsx from "clsx";
 import { useEffect, useState } from "react";
 
 export const PerformanceDashboard = () => {
@@ -54,7 +55,9 @@ export const PerformanceDashboard = () => {
       {/* Toggle Button */}
       <button
         onClick={() => setIsVisible(!isVisible)}
-        className="fixed bottom-5 left-16 z-50 bg-primary hover:bg-primary text-white px-4 py-2 rounded-lg shadow-lg transition-colors"
+        className={clsx(
+          "fixed bottom-5 left-16 z-50 bg-primary hover:bg-primary text-white px-4 py-2 rounded-lg shadow-lg transition-colors",
+        )}
         style={{ fontSize: "14px" }}
       >
         Performance
@@ -62,7 +65,11 @@ export const PerformanceDashboard = () => {
 
       {/* Dashboard */}
       {isVisible && (
-        <div className="fixed bottom-16 left-4 z-50 bg-white shadow-2xl rounded-lg p-6 w-96 max-h-96 overflow-y-auto border">
+        <div
+          className={clsx(
+            "fixed bottom-16 left-4 z-50 bg-white shadow-2xl rounded-lg p-6 w-96 max-h-96 overflow-y-auto border",
+          )}
+        >
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-bold text-primary">
               Performance Monitor

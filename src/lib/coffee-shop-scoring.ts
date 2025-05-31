@@ -53,6 +53,7 @@ const KNOWN_CHAINS = new Set([
   "bp",
   "circle-k",
   "wawa",
+  "philz-coffee",
   "sheetz",
   "speedway",
   "exxon",

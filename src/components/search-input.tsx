@@ -104,18 +104,34 @@ const SearchInput = ({ onSearch, number, isLoading }: SearchFormProps) => {
     >
       <AnimatePresence>
         {searchResults && searchResults?.length > 0 && (
-          <motion.div className="absolute text-xs right-0 h-full flex items-center px-4 opacity-50">
+          <motion.div
+            key="results-number"
+            className="absolute text-xs right-0 h-full flex items-center px-4 opacity-50"
+          >
             <p className="">{number} results</p>
           </motion.div>
         )}
-      </AnimatePresence>
 
-      {/* Loading indicator for search */}
-      {isLoading && (
-        <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-        </div>
-      )}
+        {/* Loading indicator for search */}
+        {isLoading && (
+          <motion.div
+            key="loading-indicator"
+            className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-200 overflow-hidden"
+          >
+            <motion.div
+              className="h-full w-1/3 bg-primary/60"
+              initial={{ x: "-100%" }}
+              animate={{ x: "300%" }}
+              transition={{
+                duration: 1.2,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut",
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <motion.input
         type="text"
@@ -127,7 +143,7 @@ const SearchInput = ({ onSearch, number, isLoading }: SearchFormProps) => {
         className={clsx(
           "w-full p-3 pr-24 border-0 focus:ring-0 focus:outline-none text-xl bg-[transparent]",
           "placeholder:text-tertiary",
-          isLoading ? "pl-12" : "px-5", // Add padding when loading
+          "px-5",
         )}
         autoFocus={!searchResults || searchResults?.length === 0}
       />
