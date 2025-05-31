@@ -2,12 +2,11 @@
 
 // components/SearchInput.tsx
 import { AppContext } from "@/contexts/appContext";
-import { apiUrls } from "@/lib/url-utils";
+import { useGoogleAutocomplete } from "@/hooks/useSearchQueries";
 import clsx from "clsx";
-import debounce from "lodash.debounce";
 import { AnimatePresence, motion, useWillChange } from "motion/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -18,20 +17,36 @@ type Prediction = {
 type SearchFormProps = {
   onSearch: (location: string) => void;
   number?: number;
+  isLoading?: boolean;
 };
 
-const SearchInput = ({ onSearch, number }: SearchFormProps) => {
+const SearchInput = ({ onSearch, number, isLoading }: SearchFormProps) => {
   const ref = React.useRef<HTMLDivElement>(null);
   const willChange = useWillChange();
 
   const [input, setInput] = useState<string>("");
-  const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
+  const [debouncedInput, setDebouncedInput] = useState<string>("");
 
   const router = useRouter();
   const query = useSearchParams();
   const param = query.get("find");
   const { searchResults } = useContext(AppContext);
+
+  // Simple debouncing with useEffect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedInput(input);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [input]);
+
+  // Use React Query for autocomplete with caching
+  const { data: predictions = [], isLoading: autocompleteLoading } =
+    useGoogleAutocomplete(debouncedInput, {
+      enabled: !!debouncedInput && debouncedInput.length >= 2 && isInputFocused,
+    });
 
   useEffect(() => {
     const findParam = param as string;
@@ -39,46 +54,10 @@ const SearchInput = ({ onSearch, number }: SearchFormProps) => {
       setInput(findParam);
       onSearch(findParam);
     }
-  }, []);
-
-  const fetchPredictions = async (inputValue: string) => {
-    try {
-      const response = await fetch(
-        apiUrls.search.googleAutocomplete(inputValue),
-      );
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-      const data = await response.json();
-      setPredictions(data.data.predictions);
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
-      setPredictions([]);
-    }
-  };
-
-  const debouncedFetchPredictions = useCallback(
-    debounce(fetchPredictions, 300),
-    [],
-  );
-
-  useEffect(() => {
-    if (input.length >= 3) {
-      debouncedFetchPredictions(input);
-    } else {
-      setPredictions([]);
-    }
-
-    return () => {
-      debouncedFetchPredictions.cancel();
-    };
-  }, [input, debouncedFetchPredictions]);
+  }, [onSearch, param]);
 
   const handlePredictionSelect = (prediction: Prediction) => {
     setInput(prediction.description);
-    setPredictions([]);
     setIsInputFocused(false); // Remove focus when a prediction is selected
     router.push(`/?find=${encodeURIComponent(prediction.description)}`);
     onSearch(prediction.description);
@@ -117,7 +96,7 @@ const SearchInput = ({ onSearch, number }: SearchFormProps) => {
     <motion.div
       ref={ref}
       onBlur={handleWrapperBlur}
-      className="relative w-full bg-white rounded-md "
+      className="relative w-full bg-white rounded-md"
       initial={{ scale: 1 }}
       whileHover={{ scale: 1.01 }}
       transition={{ duration: 0.7, type: "spring" }}
@@ -130,6 +109,14 @@ const SearchInput = ({ onSearch, number }: SearchFormProps) => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Loading indicator for search */}
+      {isLoading && (
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+        </div>
+      )}
+
       <motion.input
         type="text"
         value={input}
@@ -138,27 +125,37 @@ const SearchInput = ({ onSearch, number }: SearchFormProps) => {
         onFocus={() => setIsInputFocused(true)}
         placeholder="Enter a location"
         className={clsx(
-          "w-full p-3 px-5 pr-24 border-0 focus:ring-0 focus:outline-none text-xl bg-[transparent]",
+          "w-full p-3 pr-24 border-0 focus:ring-0 focus:outline-none text-xl bg-[transparent]",
           "placeholder:text-tertiary",
+          isLoading ? "pl-12" : "px-5", // Add padding when loading
         )}
         autoFocus={!searchResults || searchResults?.length === 0}
       />
+
       <AnimatePresence>
         {isInputFocused && predictions.length > 0 && (
           <motion.div
             className={clsx(
-              "absolute w-full top-14 left-0 max-h-32 h-auto overflow-scroll bg-white rounded-md",
+              "absolute w-full top-14 left-0 max-h-32 h-auto overflow-scroll bg-white rounded-md shadow-lg border z-10",
             )}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             style={{ willChange }}
           >
-            {predictions.map((sugg: any, index) => (
+            {autocompleteLoading && (
+              <div className="px-5 py-2 text-gray-500 text-sm">
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-2"></div>
+                  Loading suggestions...
+                </div>
+              </div>
+            )}
+            {predictions.map((sugg: Prediction, index: number) => (
               <motion.button
                 key={index}
                 className={clsx(
-                  "px-5 py-2 cursor-pointer text-start w-full",
+                  "px-5 py-2 cursor-pointer text-start w-full hover:bg-gray-50",
                   "focus:outline-none focus:ring-0 focus:bg-primary focus:bg-opacity-5",
                 )}
                 onClick={() => handlePredictionSelect(sugg)}

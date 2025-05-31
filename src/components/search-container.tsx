@@ -2,27 +2,34 @@
 import SearchInput from "@/components/search-input";
 import { SearchResults } from "@/components/search-results";
 import { AppContext } from "@/contexts/appContext";
-import { apiUrls } from "@/lib/url-utils";
-import { SearchResult } from "@/types/search.types";
-import { useContext } from "react";
+import { useYelpSearch } from "@/hooks/useSearchQueries";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 export const SearchContainer = () => {
   const { searchResults, setSearchResults } = useContext(AppContext);
+  const [currentLocation, setCurrentLocation] = useState<string | null>(null);
 
-  const handleSearch = async (location: string) => {
-    try {
-      const response = await fetch(apiUrls.search.yelp(location));
-      if (!response.ok) {
-        throw new Error("Search failed");
-      }
-      const data: SearchResult = await response.json();
+  // Use React Query for search with automatic caching and deduplication
+  const {
+    data: yelpData,
+    isLoading,
+    error,
+  } = useYelpSearch(currentLocation, {
+    enabled: !!currentLocation && currentLocation.length >= 3,
+  });
 
-      // The API already returns scored businesses with all required properties
-      setSearchResults(data.data);
-    } catch (error) {
-      console.error("Failed to fetch:", error);
+  // Update search results when query data changes
+  useEffect(() => {
+    if (yelpData) {
+      setSearchResults(yelpData);
     }
-  };
+  }, [yelpData, setSearchResults]);
+
+  const handleSearch = useCallback((location: string) => {
+    // This will trigger the React Query hook to fetch data
+    // If the same location is searched again, it will use cached data
+    setCurrentLocation(location);
+  }, []);
 
   // Filter results to only show high-rated businesses (rating > 4) for the count
   const filteredResults =
@@ -35,10 +42,16 @@ export const SearchContainer = () => {
           <SearchInput
             onSearch={handleSearch}
             number={filteredResults?.length}
+            isLoading={isLoading}
           />
         </div>
       </div>
       <SearchResults />
+      {error && (
+        <div className="text-red-500 text-center p-4">
+          Error loading results: {error.message}
+        </div>
+      )}
     </>
   );
 };
