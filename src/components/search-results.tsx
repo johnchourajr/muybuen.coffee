@@ -72,15 +72,12 @@ export const SearchResults = () => {
                     distance={miles}
                     imageUrl={result.image_url}
                     imageAlt={result.name}
-                    buentag={result.buentag}
-                    shopAlias={result.alias}
                     size="md"
                     showImage={true}
                     showListBadge={true}
                     voteTally={voteTally}
-                    showVoteTally={!talliesLoading}
                     business={result}
-                    showScoring={true}
+                    showScoring={process.env.NODE_ENV !== "production"}
                     showScoringBreakdown={showScoringBreakdown}
                     listStatus={listStatus}
                   />

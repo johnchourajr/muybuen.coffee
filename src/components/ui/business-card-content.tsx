@@ -18,14 +18,14 @@ export interface BusinessCardContentProps {
   distance?: string;
   imageUrl?: string;
   imageAlt?: string;
-  buentag?: string;
-  shopAlias?: string;
+  // buentag?: string;
+  // shopAlias?: string;
   className?: string;
   size?: "sm" | "md" | "lg";
   showImage?: boolean;
   showListBadge?: boolean;
   voteTally?: VoteTally;
-  showVoteTally?: boolean;
+  // showVoteTally?: boolean;
   business?: ScoredBusiness;
   showScoring?: boolean;
   showScoringBreakdown?: boolean;
@@ -40,14 +40,14 @@ export const BusinessCardContent = ({
   distance,
   imageUrl,
   imageAlt,
-  buentag,
-  shopAlias,
+  // buentag,
+  // shopAlias,
   className,
   size = "md",
   showImage = true,
   showListBadge = true,
   voteTally,
-  showVoteTally = true,
+  // showVoteTally = true,
   business,
   showScoring = false,
   showScoringBreakdown = false,

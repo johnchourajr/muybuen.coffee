@@ -44,6 +44,7 @@ const KNOWN_CHAINS = new Set([
   "dunkin",
   "mcdonald",
   "subway",
+  "coffee-bean-and-tea-leaf",
   "peet",
   "tim-horton",
   "7-eleven",
