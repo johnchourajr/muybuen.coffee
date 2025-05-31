@@ -136,7 +136,7 @@ export const ShopTemplate = ({ shop }: ShopTemplateProps) => {
           />
 
           {/* Main content */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Image section with photo carousel */}
             <motion.div
               className="flex flex-col gap-4"

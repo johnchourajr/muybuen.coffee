@@ -94,8 +94,10 @@ export const BusinessCardContent = ({
             <h2 className={clsx("text-primary flex-1", currentSize.title)}>
               {name}
             </h2>
+
             {showListBadge && shopListInfo.badge && (
               <StatusBadge
+                key={`${name}-badge`}
                 variant={shopListInfo.badge.variant}
                 label={shopListInfo.badge.label}
                 icon={shopListInfo.badge.icon}

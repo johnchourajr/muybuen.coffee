@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import {
   BusinessInfo,
   RatingDisplay,
@@ -58,7 +58,9 @@ export const ShopHeader = ({
       className="flex flex-col gap-3"
     >
       <div className="flex items-start justify-between">
-        <h1 className="text-4xl font-bold text-primary">{name}</h1>
+        <h1 className="text-4xl font-bold text-primary pr-4 text-pretty">
+          {name}
+        </h1>
         {/* Voting buttons */}
         {alias && <VotingButtons alias={alias} className="justify-center" />}
       </div>
@@ -76,22 +78,48 @@ export const ShopHeader = ({
           )}
         </div>
         <div className="flex items-center space-x-2 text-primary/80 flex-wrap">
-          {shopListInfo.badge && (
-            <StatusBadge
-              variant={shopListInfo.badge.variant}
-              label={shopListInfo.badge.label}
-              icon={shopListInfo.badge.icon}
-            />
-          )}
-          {isClaimed && (
-            <StatusBadge variant="verified" label="Verified" icon="✓" />
-          )}
-          {isOpenNow !== undefined && (
-            <StatusBadge
-              variant={isOpenNow ? "open" : "closed"}
-              label={isOpenNow ? "Open" : "Closed"}
-            />
-          )}
+          <AnimatePresence>
+            {shopListInfo.badge && (
+              <motion.div
+                key="shop-list-badge"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                layoutId={shopListInfo.badge.label}
+              >
+                <StatusBadge
+                  variant={shopListInfo.badge.variant}
+                  label={shopListInfo.badge.label}
+                  icon={shopListInfo.badge.icon}
+                />
+              </motion.div>
+            )}
+            {isClaimed && (
+              <motion.div
+                key="verified-badge"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                layoutId={"verified-badge"}
+              >
+                <StatusBadge variant="verified" label="Verified" icon="✓" />
+              </motion.div>
+            )}
+            {isOpenNow !== undefined && (
+              <motion.div
+                key="openclosed-badge"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                layoutId={"openclosed-badge"}
+              >
+                <StatusBadge
+                  variant={isOpenNow ? "open" : "closed"}
+                  label={isOpenNow ? "Open" : "Closed"}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </motion.div>

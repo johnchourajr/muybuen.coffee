@@ -6,6 +6,7 @@ export interface StatusBadgeProps {
   label: string;
   className?: string;
   icon?: string;
+  layoutId?: string;
 }
 
 // Test variable to check if intellisense works
@@ -16,6 +17,7 @@ export const StatusBadge = ({
   label,
   className,
   icon,
+  layoutId,
 }: StatusBadgeProps) => {
   const baseClasses = clsx(
     "px-2 py-[2px] flex justify-center items-center rounded-full text-sm font-medium",
