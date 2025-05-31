@@ -102,7 +102,7 @@ export const PhotoCarousel = ({
         className="relative aspect-square rounded-3xl overflow-hidden cursor-pointer bg-primary/5"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >

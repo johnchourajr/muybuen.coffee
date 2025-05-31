@@ -54,11 +54,11 @@ export const ShopHeader = ({
     <motion.div
       initial={{ opacity: 0, y: "1rem" }}
       animate={{ opacity: 1, y: "0rem" }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
       className="flex flex-col gap-3"
     >
       <div className="flex items-start justify-between">
-        <h1 className="text-4xl font-bold text-primary pr-4 text-pretty">
+        <h1 className="text-buen-2xl font-bold text-primary pr-4 text-pretty">
           {name}
         </h1>
         {/* Voting buttons */}
@@ -84,7 +84,7 @@ export const ShopHeader = ({
                 key="shop-list-badge"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 layoutId={shopListInfo.badge.label}
               >
                 <StatusBadge
@@ -99,7 +99,7 @@ export const ShopHeader = ({
                 key="verified-badge"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 layoutId={"verified-badge"}
               >
                 <StatusBadge variant="verified" label="Verified" icon="✓" />
@@ -110,7 +110,7 @@ export const ShopHeader = ({
                 key="openclosed-badge"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 layoutId={"openclosed-badge"}
               >
                 <StatusBadge

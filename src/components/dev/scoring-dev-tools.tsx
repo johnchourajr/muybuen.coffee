@@ -27,7 +27,7 @@ export const ScoringDevTools = ({
     <motion.div
       initial={{ opacity: 0, y: "1rem" }}
       animate={{ opacity: 1, y: "0rem" }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
       className={`grid-container ${className || ""}`}
     >
       <div className="col-span-full pt-10 pb-6 relative z-20">

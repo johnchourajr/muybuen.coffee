@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { ListManagementDevTools } from "./dev/list-management-dev-tools";
 import { ContactDetails } from "./shop/contact-details";
-import { OpeningHours } from "./shop/opening-hours";
 import { PhotoCarousel } from "./shop/photo-carousel";
 import { ShopActions } from "./shop/shop-actions";
 import { ShopHeader } from "./shop/shop-header";
@@ -92,7 +91,7 @@ export const ShopTemplate = ({ shop }: ShopTemplateProps) => {
           <motion.div
             initial={{ opacity: 0, y: "1rem" }}
             animate={{ opacity: 1, y: "0rem" }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
           >
             <button
               onClick={handleBackClick}
@@ -142,7 +141,7 @@ export const ShopTemplate = ({ shop }: ShopTemplateProps) => {
               className="flex flex-col gap-4"
               initial={{ opacity: 0, y: "1rem" }}
               animate={{ opacity: 1, y: "0rem" }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             >
               {/* Photo carousel */}
               <PhotoCarousel
@@ -161,10 +160,14 @@ export const ShopTemplate = ({ shop }: ShopTemplateProps) => {
 
             {/* Details section */}
             <motion.div
-              className="space-y-6"
+              className="flex flex-col divide-y divide-primary/10"
               initial={{ opacity: 0, y: "1rem" }}
               animate={{ opacity: 1, y: "0rem" }}
-              transition={{ duration: 0.3, delay: 0.1, ease: "easeOut" }}
+              transition={{
+                duration: 0.45,
+                delay: 0.1,
+                ease: [0.16, 1, 0.3, 1],
+              }}
             >
               {/* Contact Details */}
               <ContactDetails
@@ -174,10 +177,8 @@ export const ShopTemplate = ({ shop }: ShopTemplateProps) => {
                 displayPhone={shop.display_phone}
                 transactions={shop.transactions}
                 price={shop.price}
+                hours={shop.hours}
               />
-
-              {/* Opening Hours */}
-              <OpeningHours hours={shop.hours} />
             </motion.div>
           </div>
 

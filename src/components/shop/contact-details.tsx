@@ -1,5 +1,6 @@
 "use client";
 
+import { OpeningHours } from "./opening-hours";
 import { ServicesBadges } from "./services-badges";
 
 interface ContactDetailsProps {
@@ -15,6 +16,16 @@ interface ContactDetailsProps {
   displayPhone?: string;
   price?: string;
   transactions?: string[];
+  hours?: Array<{
+    open: Array<{
+      is_overnight: boolean;
+      start: string;
+      end: string;
+      day: number;
+    }>;
+    hours_type: string;
+    is_open_now?: boolean;
+  }>;
 }
 
 const getPriceExplanation = (price: string) => {
@@ -39,15 +50,14 @@ export const ContactDetails = ({
   displayPhone,
   price,
   transactions,
+  hours,
 }: ContactDetailsProps) => {
   return (
-    <div className="space-y-6">
+    <>
       {/* Categories */}
       {categories && categories.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-primary mb-2">
-            Categories
-          </h3>
+        <div className="pb-4 flex flex-col gap-2">
+          <h3 className="text-lg font-semibold text-primary">Categories</h3>
           <div className="flex flex-wrap gap-2">
             {categories.map((category, index) => (
               <span
@@ -62,8 +72,8 @@ export const ContactDetails = ({
       )}
 
       {/* Location */}
-      <div>
-        <h3 className="text-lg font-semibold text-primary mb-2">Location</h3>
+      <div className="py-4 flex flex-col gap-2">
+        <h3 className="text-lg font-semibold text-primary">Location</h3>
         <div className="text-primary/80 space-y-1">
           {location.display_address.map((line, index) => (
             <div key={index}>{line}</div>
@@ -78,8 +88,8 @@ export const ContactDetails = ({
 
       {/* Contact & Details */}
       {displayPhone && (
-        <div>
-          <h3 className="text-lg font-semibold text-primary mb-1">Phone</h3>
+        <div className="py-4 flex flex-col gap-2">
+          <h3 className="text-lg font-semibold text-primary">Phone</h3>
           <a
             href={`tel:${phone}`}
             className="text-primary/80 hover:text-primary transition-colors"
@@ -90,10 +100,8 @@ export const ContactDetails = ({
       )}
 
       {price && (
-        <div>
-          <h3 className="text-lg font-semibold text-primary mb-1">
-            Price Range
-          </h3>
+        <div className="py-4 flex flex-col gap-2">
+          <h3 className="text-lg font-semibold text-primary">Price Range</h3>
           <div className="flex items-center gap-2">
             <span className="text-primary/80 font-medium">{price}</span>
             <span className="text-primary/60 text-sm">
@@ -104,14 +112,19 @@ export const ContactDetails = ({
       )}
 
       {transactions && transactions.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-primary mb-1">
-            Transactions
-          </h3>
+        <div className="py-4 flex flex-col gap-2">
+          <h3 className="text-lg font-semibold text-primary">Transactions</h3>
           {/* Services badges */}
           <ServicesBadges transactions={transactions} />
         </div>
       )}
-    </div>
+
+      {/* Opening Hours */}
+      {hours && (
+        <div className="py-4 flex flex-col gap-2">
+          <OpeningHours hours={hours} />
+        </div>
+      )}
+    </>
   );
 };

@@ -37,7 +37,7 @@ export const ListManagementDevTools = ({
     <motion.div
       initial={{ opacity: 0, y: "1rem" }}
       animate={{ opacity: 1, y: "0rem" }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
       className={`bg-primary/5 border border-primary/25 rounded-lg p-4 ${className || ""}`}
     >
       <div className="flex items-center justify-between mb-2">
