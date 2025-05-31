@@ -1,20 +1,24 @@
 "use client";
 import { ScrollXWrapper } from "@/components/scroll-x-wrapper";
 import { AppContext } from "@/contexts/appContext";
+import { useBuenLists } from "@/hooks/useBuenLists";
 import { useVoteTallies } from "@/hooks/useVoteTallies";
-import { useContext, useMemo } from "react";
+import { getShopListStatus } from "@/utils/shop-lists";
+import { useContext, useMemo, useState } from "react";
+import { ScoringDevTools } from "./dev/scoring-dev-tools";
 import { ResultTile } from "./search-result-tile";
 import { BusinessCardContent } from "./ui/business-card-content";
 
 export const SearchResults = () => {
   const { searchResults } = useContext(AppContext);
+  const [showScoringBreakdown, setShowScoringBreakdown] = useState(false);
 
   // Memoize the filtered results to prevent recreating on every render
   const results = useMemo(() => {
     console.log("Filtering search results:", searchResults?.length);
     // Server-side already handles comprehensive scoring and ordering
-    // We only filter by rating here as an additional quality gate
-    return searchResults?.filter((item) => item.rating > 4) || [];
+    // Don't filter by rating here - let the scoring algorithm handle quality assessment
+    return searchResults || [];
   }, [searchResults]);
 
   // Memoize aliases to prevent infinite database calls
@@ -26,6 +30,9 @@ export const SearchResults = () => {
   // Fetch vote tallies for display purposes (scoring is done server-side)
   const { voteTallies, isLoading: talliesLoading } = useVoteTallies(aliases);
 
+  // Fetch buen lists data for display purposes
+  const { entriesByAlias } = useBuenLists(aliases);
+
   return (
     <>
       <ScrollXWrapper
@@ -34,15 +41,21 @@ export const SearchResults = () => {
         {results && results?.length > 0
           ? results.map((result, index) => {
               // convert meters to miles
-              const miles = `${(result.distance * 0.000621371192).toFixed(
-                2,
-              )} miles`;
+              const miles = `${(
+                (result.distance || 0) * 0.000621371192
+              ).toFixed(2)} miles`;
 
               // Create clean internal shop URL using the business alias (more SEO-friendly)
               const shopUrl = `/shop/${result.alias}`;
 
               // Get vote tally for this shop
               const voteTally = voteTallies[result.alias];
+
+              // Get list status for this shop
+              const listStatus = getShopListStatus(
+                result.alias,
+                entriesByAlias,
+              );
 
               return (
                 <ResultTile
@@ -66,12 +79,23 @@ export const SearchResults = () => {
                     showListBadge={true}
                     voteTally={voteTally}
                     showVoteTally={!talliesLoading}
+                    business={result}
+                    showScoring={true}
+                    showScoringBreakdown={showScoringBreakdown}
+                    listStatus={listStatus}
                   />
                 </ResultTile>
               );
             })
           : ["", "", ""].map((_, index) => <ResultTile key={index} />)}
       </ScrollXWrapper>
+
+      {/* Scoring Controls */}
+      <ScoringDevTools
+        showScoringBreakdown={showScoringBreakdown}
+        setShowScoringBreakdown={setShowScoringBreakdown}
+        hasResults={results && results.length > 0}
+      />
     </>
   );
 };

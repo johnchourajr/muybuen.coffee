@@ -1,14 +1,14 @@
-"use client"
-import clsx from "clsx"
-import { motion, useWillChange } from "motion/react"
-import Link from "next/link"
+"use client";
+import clsx from "clsx";
+import { motion, useWillChange } from "motion/react";
+import Link from "next/link";
 
 export type ResultTileProps = {
-  children?: React.ReactNode
-  className?: string
-  href?: string
-  uid?: string
-}
+  children?: React.ReactNode;
+  className?: string;
+  href?: string;
+  uid?: string;
+};
 
 /**
  * ResultTile - A reusable tile component that can contain any content
@@ -44,7 +44,7 @@ export const ResultTile = ({
   uid,
   ...extra
 }: ResultTileProps) => {
-  const willChange = useWillChange()
+  const willChange = useWillChange();
 
   const animatedProps = children && {
     whileHover: {
@@ -58,20 +58,20 @@ export const ResultTile = ({
       ease: "circOut",
     },
     style: { willChange } as any,
-  }
+  };
 
   const commonClassName = clsx(
-    "glass-card glass-card--light-blue overflow-hidden",
+    "glass-card glass-card--light-blue overflow-clip",
     "min-h-[13rem] md:min-h-[18rem] w-[13rem] md:w-[18rem]",
     "relative flex flex-col h-full md:py-7 py-5 md:px-9 px-6 rounded-3xl",
     children && "bg-primaryLight",
     !children && "bg-white bg-opacity-10",
     className,
-  )
+  );
 
   if (href) {
-    const MotionLink = motion(Link)
-    const isExternal = href.startsWith("http")
+    const MotionLink = motion(Link);
+    const isExternal = href.startsWith("http");
 
     return (
       <MotionLink
@@ -84,12 +84,12 @@ export const ResultTile = ({
       >
         {children}
       </MotionLink>
-    )
+    );
   }
 
   return (
     <motion.div className={commonClassName} {...animatedProps} {...extra}>
       {children}
     </motion.div>
-  )
-}
+  );
+};

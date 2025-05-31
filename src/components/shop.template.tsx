@@ -1,8 +1,11 @@
 "use client";
+import { useBuenLists } from "@/hooks/useBuenLists";
 import { Business } from "@/types/search.types";
 import { getShopListStatus } from "@/utils/shop-lists";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
+import { ListManagementDevTools } from "./dev/list-management-dev-tools";
 import { ContactDetails } from "./shop/contact-details";
 import { OpeningHours } from "./shop/opening-hours";
 import { PhotoCarousel } from "./shop/photo-carousel";
@@ -38,6 +41,14 @@ export type ShopTemplateProps = {
 export const ShopTemplate = ({ shop }: ShopTemplateProps) => {
   const router = useRouter();
 
+  // Memoize the aliases array to prevent recreating it on every render
+  const aliases = useMemo(() => {
+    return shop.alias ? [shop.alias] : [];
+  }, [shop.alias]);
+
+  // Use the hook to get shop list data
+  const { entriesByAlias } = useBuenLists(aliases);
+
   // Handle distance - it might be undefined when fetching individual business details
   const miles = shop.distance
     ? (shop.distance * 0.000621371192).toFixed(2)
@@ -66,8 +77,9 @@ export const ShopTemplate = ({ shop }: ShopTemplateProps) => {
     (h) => h.day === new Date().getDay(),
   );
 
+  // Get shop list status using client-side function with hook data
   const shopListInfo = shop.alias
-    ? getShopListStatus(shop.alias)
+    ? getShopListStatus(shop.alias, entriesByAlias)
     : { status: null };
 
   console.log(shopListInfo);
@@ -168,6 +180,9 @@ export const ShopTemplate = ({ shop }: ShopTemplateProps) => {
               <OpeningHours hours={shop.hours} />
             </motion.div>
           </div>
+
+          {/* Dev List Management (localhost only) */}
+          {shop.alias && <ListManagementDevTools shopAlias={shop.alias} />}
         </div>
       </div>
     </div>

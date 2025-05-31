@@ -1,10 +1,12 @@
 "use client";
 import { VoteTally } from "@/hooks/useVoteTallies";
-import { getShopListStatus } from "@/utils/shop-lists";
+import { ScoredBusiness } from "@/lib/coffee-shop-scoring";
+import { ShopListInfo } from "@/utils/shop-lists";
 import clsx from "clsx";
 import Image from "next/image";
 import { BusinessInfo } from "./business-info";
 import { RatingDisplay } from "./rating-display";
+import { ScoringDisplay } from "./scoring-display";
 import { StatusBadge } from "./status-badge";
 import { VoteTallyDisplay } from "./vote-tally-display";
 
@@ -24,6 +26,10 @@ export interface BusinessCardContentProps {
   showListBadge?: boolean;
   voteTally?: VoteTally;
   showVoteTally?: boolean;
+  business?: ScoredBusiness;
+  showScoring?: boolean;
+  showScoringBreakdown?: boolean;
+  listStatus?: ShopListInfo;
 }
 
 export const BusinessCardContent = ({
@@ -42,6 +48,10 @@ export const BusinessCardContent = ({
   showListBadge = true,
   voteTally,
   showVoteTally = true,
+  business,
+  showScoring = false,
+  showScoringBreakdown = false,
+  listStatus,
 }: BusinessCardContentProps) => {
   const sizeClasses = {
     sm: {
@@ -63,9 +73,7 @@ export const BusinessCardContent = ({
 
   const currentSize = sizeClasses[size];
 
-  const shopListInfo = shopAlias
-    ? getShopListStatus(shopAlias)
-    : { status: null };
+  const shopListInfo = listStatus || { status: null };
 
   const businessInfoItems = [
     ...(distance ? [{ label: "", value: distance }] : []),
@@ -152,6 +160,16 @@ export const BusinessCardContent = ({
             <BusinessInfo items={businessInfoItems} orientation="vertical" />
           )}
         </div>
+
+        {/* Scoring Display */}
+        {showScoring && business && (
+          <ScoringDisplay
+            business={business}
+            showBreakdown={showScoringBreakdown}
+            size={size === "lg" ? "md" : "sm"}
+            className="mt-2"
+          />
+        )}
 
         <VoteTallyDisplay tally={voteTally} size="sm" className="mt-2" />
       </div>

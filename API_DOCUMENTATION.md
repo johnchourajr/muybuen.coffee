@@ -72,7 +72,7 @@ Creates a new user or updates an existing user in the database.
 
 ### 1. Yelp Coffee Search
 
-**GET** `/search/yelp?location={location}&radius={radius}&limit={limit}`
+**GET** `/search/yelp?location={location}&radius={radius}&limit={limit}&excludeChains={excludeChains}`
 
 Searches for coffee shops using Yelp API with custom categorization.
 
@@ -81,6 +81,7 @@ Searches for coffee shops using Yelp API with custom categorization.
 - `location` (required): Location to search (e.g., "New York, NY")
 - `radius` (optional): Search radius in meters (100-40000, default: 2500)
 - `limit` (optional): Number of results (1-50, default: 50)
+- `excludeChains` (optional): Whether to exclude chain coffee shops (true/false, default: true)
 
 #### Response
 
@@ -108,6 +109,7 @@ Searches for coffee shops using Yelp API with custom categorization.
 
 #### Features
 
+- **Chain Exclusion**: By default excludes known coffee chains (Starbucks, Dunkin', etc.)
 - **Smart Categorization**: Results are categorized as "buen" (excellent), normal, or "shitlist"
 - **Blacklist Filtering**: Certain shops are filtered out completely
 - **Distance Sorting**: Results sorted by distance within each category

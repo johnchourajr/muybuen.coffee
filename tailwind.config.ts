@@ -72,6 +72,11 @@ const colors = {
     DEFAULT: "rgb(255, 0, 0)",
     50: "rgba(255, 0, 0, 0.5)",
   },
+  black: {
+    DEFAULT: "rgb(0, 0, 0)",
+    50: "rgba(0, 0, 0, 0.5)",
+    10: "rgba(0, 0, 0, 0.1)",
+  },
   ground: {
     DEFAULT: "rgb(237, 238, 248)",
     50: "rgba(237, 238, 248, 0.5)",

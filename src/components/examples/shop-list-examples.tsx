@@ -1,5 +1,6 @@
 "use client";
-import { BusinessCardContent, StatusBadge, getShopListStatus } from "../ui";
+import { useBuenLists } from "@/hooks/useBuenLists";
+import { BusinessCardContent, StatusBadge, clientSideUtils } from "../ui";
 
 // Mock vote tallies for testing
 const mockVoteTallies = {
@@ -24,17 +25,36 @@ const mockVoteTallies = {
 };
 
 /**
- * Examples of how to use the shop list features
+ * Examples of how to use the shop list features with database-backed lists
  */
 export const ShopListExamples = () => {
-  // Example shop aliases from your lists
-  const buenShop = "neat-coffee-costa-mesa"; // From buenlist
-  const shitShop = "rad-coffee-long-beach-4"; // From shitlist
-  const regularShop = "some-regular-shop"; // Not on any list
+  // Use the database-backed hook
+  const {
+    entriesByAlias,
+    isLoading,
+    addToBuenList,
+    addToShitList,
+    removeFromList,
+    isInList,
+    getCurrentList,
+  } = useBuenLists();
+
+  // Example shop aliases for testing
+  const testAliases = [
+    "neat-coffee-costa-mesa",
+    "rad-coffee-long-beach-4",
+    "some-regular-shop",
+  ];
+
+  if (isLoading) {
+    return <div className="p-8">Loading shop lists...</div>;
+  }
 
   return (
     <div className="p-8 space-y-8">
-      <h2 className="text-2xl font-bold mb-4">Shop List Badge Examples</h2>
+      <h2 className="text-2xl font-bold mb-4">
+        Shop List Badge Examples (Database-Backed)
+      </h2>
 
       {/* Individual badge examples */}
       <div className="space-y-4">
@@ -45,80 +65,131 @@ export const ShopListExamples = () => {
         </div>
       </div>
 
-      {/* Programmatic badge examples */}
+      {/* Database-backed examples */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Programmatic Examples:</h3>
-        <div className="space-y-2">
-          {[buenShop, shitShop, regularShop].map((alias) => {
-            const shopInfo = getShopListStatus(alias);
+        <h3 className="text-lg font-semibold">Database-Backed Examples:</h3>
+        <div className="space-y-4">
+          {testAliases.map((alias) => {
+            const shopInfo = clientSideUtils.getShopListStatus(
+              alias,
+              entriesByAlias,
+            );
+            const currentList = getCurrentList(alias);
+
             return (
-              <div key={alias} className="flex items-center gap-4">
-                <span className="w-48 text-sm font-mono">{alias}</span>
-                <span className="w-20">{shopInfo.status || "regular"}</span>
-                {shopInfo.badge && (
-                  <StatusBadge
-                    variant={shopInfo.badge.variant}
-                    label={shopInfo.badge.label}
-                    icon={shopInfo.badge.icon}
-                  />
-                )}
+              <div key={alias} className="border rounded p-4">
+                <div className="flex items-center gap-4 mb-2">
+                  <span className="w-48 text-sm font-mono">{alias}</span>
+                  <span className="w-20">{shopInfo.status || "regular"}</span>
+                  {shopInfo.badge && (
+                    <StatusBadge
+                      variant={shopInfo.badge.variant}
+                      label={shopInfo.badge.label}
+                      icon={shopInfo.badge.icon}
+                    />
+                  )}
+                  <span className="text-xs text-gray-500">
+                    Current: {currentList || "none"}
+                  </span>
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => addToBuenList(alias)}
+                    className={`px-3 py-1 text-xs rounded ${
+                      isInList(alias, "buenlist")
+                        ? "bg-green-200 text-green-800"
+                        : "bg-gray-200 text-gray-800"
+                    }`}
+                  >
+                    {isInList(alias, "buenlist")
+                      ? "Remove from Buen"
+                      : "Add to Buen"}
+                  </button>
+
+                  <button
+                    onClick={() => addToShitList(alias)}
+                    className={`px-3 py-1 text-xs rounded ${
+                      isInList(alias, "shitlist")
+                        ? "bg-red-200 text-red-800"
+                        : "bg-gray-200 text-gray-800"
+                    }`}
+                  >
+                    {isInList(alias, "shitlist")
+                      ? "Remove from Shit"
+                      : "Add to Shit"}
+                  </button>
+
+                  {currentList && (
+                    <button
+                      onClick={() => removeFromList(alias)}
+                      className="px-3 py-1 text-xs rounded bg-gray-300 text-gray-800"
+                    >
+                      Remove from All
+                    </button>
+                  )}
+                </div>
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* Business card examples */}
+      {/* Usage code examples */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Business Card Examples:</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Buen listed shop */}
-          <div className="bg-white rounded-lg p-4">
-            <BusinessCardContent
-              name="Neat Coffee"
-              rating={4.8}
-              reviewCount={156}
-              address={["123 Main St", "Costa Mesa, CA"]}
-              distance="0.5 miles"
-              shopAlias="neat-coffee-costa-mesa"
-              showImage={false}
-              size="sm"
-              voteTally={mockVoteTallies["neat-coffee-costa-mesa"]}
-              showVoteTally={true}
-            />
-          </div>
+        <h3 className="text-lg font-semibold">Code Examples:</h3>
+        <div className="bg-gray-100 p-4 rounded text-sm font-mono">
+          <pre>{`// Using the hook
+const { entriesByAlias, addToBuenList, isInList } = useBuenLists();
 
-          {/* Shit listed shop */}
-          <div className="bg-white rounded-lg p-4">
-            <BusinessCardContent
-              name="Rad Coffee"
-              rating={3.2}
-              reviewCount={89}
-              address={["456 Beach Blvd", "Long Beach, CA"]}
-              distance="2.1 miles"
-              shopAlias="rad-coffee-long-beach-4"
-              showImage={false}
-              size="sm"
-              voteTally={mockVoteTallies["rad-coffee-long-beach-4"]}
-              showVoteTally={true}
-            />
-          </div>
+// Check if shop is in a list
+const isBuen = isInList('shop-alias', 'buenlist');
 
-          {/* Regular shop */}
-          <div className="bg-white rounded-lg p-4">
-            <BusinessCardContent
-              name="Regular Coffee"
-              rating={4.0}
-              reviewCount={45}
-              address={["789 Oak Ave", "Somewhere, CA"]}
-              distance="1.2 miles"
-              shopAlias="some-regular-shop"
-              showImage={false}
-              size="sm"
-              voteTally={mockVoteTallies["some-regular-shop"]}
-              showVoteTally={true}
-            />
-          </div>
+// Add to list (with toggle behavior)
+await addToBuenList('shop-alias');
+
+// Get shop status with badge info
+const shopInfo = clientSideUtils.getShopListStatus('shop-alias', entriesByAlias);`}</pre>
+        </div>
+      </div>
+
+      {/* Business card examples with real data */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Business Card Integration:</h3>
+        <div className="grid gap-4 md:grid-cols-2">
+          {testAliases.slice(0, 2).map((alias) => {
+            const shopInfo = clientSideUtils.getShopListStatus(
+              alias,
+              entriesByAlias,
+            );
+            const voteTally =
+              mockVoteTallies[alias as keyof typeof mockVoteTallies];
+
+            return (
+              <div key={alias} className="border rounded-lg overflow-hidden">
+                <BusinessCardContent
+                  name={alias
+                    .split("-")
+                    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                    .join(" ")}
+                  rating={4.2}
+                  reviewCount={150}
+                  address={["123 Coffee St", "Costa Mesa, CA"]}
+                  distance="0.5 miles"
+                  imageUrl="/placeholder-coffee-shop.jpg"
+                  imageAlt="Coffee shop"
+                  shopAlias={alias}
+                  size="md"
+                  showImage={true}
+                  showListBadge={true}
+                  voteTally={voteTally}
+                  showVoteTally={true}
+                  listStatus={shopInfo}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

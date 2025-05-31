@@ -1,6 +1,5 @@
 // app/api/search/yelp.ts
 
-import { blacklist, buenlist, shitlist } from "@/data/lists/lists";
 import {
   ApiResponses,
   checkRateLimit,
@@ -28,6 +27,7 @@ export async function GET(request: NextRequest) {
     const location = searchParams.get("location");
     const radius = searchParams.get("radius") || "2500";
     const limit = searchParams.get("limit") || "50";
+    const excludeChains = searchParams.get("excludeChains") !== "false"; // Default to true, only false if explicitly set
 
     // Validate required parameters
     const locationError = validateRequired(location, "location");
@@ -52,8 +52,8 @@ export async function GET(request: NextRequest) {
       return ApiResponses.badRequest("Limit must be between 1 and 50");
     }
 
-    // Check cache
-    const cacheKey = `yelp:${locationStr}:${radius}:${limit}`;
+    // Check cache (include excludeChains in cache key)
+    const cacheKey = `yelp:${locationStr}:${radius}:${limit}:${excludeChains}`;
     const cached = searchCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
       return ApiResponses.success(cached.data);
@@ -102,12 +102,10 @@ export async function GET(request: NextRequest) {
       return ApiResponses.serverError("Invalid response from Yelp API");
     }
 
-    // Process and score the results using the extracted scoring logic
+    // Process and score the results using the database-backed scoring logic
     const processedData = await processAndScoreBusinesses(
       data.businesses,
-      buenlist,
-      shitlist,
-      blacklist,
+      excludeChains,
     );
 
     // Cache the results

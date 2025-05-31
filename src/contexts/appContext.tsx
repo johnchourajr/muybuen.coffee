@@ -1,6 +1,6 @@
 "use client";
 
-import { Business } from "@/types/search.types";
+import { ScoredBusiness } from "@/lib/coffee-shop-scoring";
 import React, { createContext, useEffect, useState } from "react";
 
 interface AppContextType {
@@ -16,8 +16,8 @@ interface AppContextType {
   setApiEnabledAutoComplete: (value: boolean) => void;
   setApiEnabledYelp: (value: boolean) => void;
   setApiEnabledGoogle: (value: boolean) => void;
-  searchResults: Business[] | null;
-  setSearchResults: (value: Business[] | null) => void;
+  searchResults: ScoredBusiness[] | null;
+  setSearchResults: (value: ScoredBusiness[] | null) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -44,7 +44,9 @@ const AppContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [apiEnabledAutoComplete, setApiEnabledAutoComplete] = useState(true);
   const [apiEnabledYelp, setApiEnabledYelp] = useState(true);
   const [apiEnabledGoogle, setApiEnabledGoogle] = useState(true);
-  const [searchResults, setSearchResults] = useState<Business[] | null>(null);
+  const [searchResults, setSearchResults] = useState<ScoredBusiness[] | null>(
+    null,
+  );
   useEffect(() => {
     console.log({
       apiCountAutocomplete,

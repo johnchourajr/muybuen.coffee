@@ -1,24 +1,29 @@
-import { buenlist } from "@/data/lists/buenlist"
-import { shitlist } from "@/data/lists/shitlist"
-
-export type ShopListStatus = "buen" | "shit" | null
+export type ShopListStatus = "buen" | "shit" | null;
 
 export interface ShopListInfo {
-  status: ShopListStatus
+  status: ShopListStatus;
   badge?: {
-    variant: "buen" | "shit"
-    label: string
-    icon: string
-  }
+    variant: "buen" | "shit";
+    label: string;
+    icon: string;
+  };
 }
 
 /**
- * Check if a shop is on the buen list or shit list
- * @param shopAlias - The shop's alias/identifier
- * @returns ShopListInfo object with status and badge information
+ * Client-side utilities for use with the useBuenLists hook
+ * These work with the hook data and don't make database calls
  */
-export const getShopListStatus = (shopAlias: string): ShopListInfo => {
-  if (buenlist.includes(shopAlias)) {
+
+/**
+ * Get shop list status from hook data (CLIENT-SIDE)
+ */
+export const getShopListStatus = (
+  shopAlias: string,
+  entriesByAlias: Record<string, any>,
+): ShopListInfo => {
+  const entry = entriesByAlias[shopAlias];
+
+  if (entry?.list === "buenlist") {
     return {
       status: "buen",
       badge: {
@@ -26,10 +31,10 @@ export const getShopListStatus = (shopAlias: string): ShopListInfo => {
         label: "Buen",
         icon: "👍",
       },
-    }
+    };
   }
 
-  if (shitlist.includes(shopAlias)) {
+  if (entry?.list === "shitlist") {
     return {
       status: "shit",
       badge: {
@@ -37,22 +42,35 @@ export const getShopListStatus = (shopAlias: string): ShopListInfo => {
         label: "Shit",
         icon: "💩",
       },
-    }
+    };
   }
 
-  return { status: null }
-}
+  return { status: null };
+};
 
 /**
- * Check if a shop is on the buen list
+ * Check if a shop is on the buen list (CLIENT-SIDE)
  */
-export const isBuenListed = (shopAlias: string): boolean => {
-  return buenlist.includes(shopAlias)
-}
+export const isBuenListed = (
+  shopAlias: string,
+  entriesByAlias: Record<string, any>,
+): boolean => {
+  return entriesByAlias[shopAlias]?.list === "buenlist";
+};
 
 /**
- * Check if a shop is on the shit list
+ * Check if a shop is on the shit list (CLIENT-SIDE)
  */
-export const isShitListed = (shopAlias: string): boolean => {
-  return shitlist.includes(shopAlias)
-}
+export const isShitListed = (
+  shopAlias: string,
+  entriesByAlias: Record<string, any>,
+): boolean => {
+  return entriesByAlias[shopAlias]?.list === "shitlist";
+};
+
+// For backward compatibility, export everything under clientSideUtils as well
+export const clientSideUtils = {
+  getShopListStatus,
+  isBuenListed,
+  isShitListed,
+};

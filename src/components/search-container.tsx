@@ -2,6 +2,7 @@
 import SearchInput from "@/components/search-input";
 import { SearchResults } from "@/components/search-results";
 import { AppContext } from "@/contexts/appContext";
+import { ScoredBusiness } from "@/lib/coffee-shop-scoring";
 import { apiUrls } from "@/lib/url-utils";
 import { SearchResult } from "@/types/search.types";
 import { useContext } from "react";
@@ -16,8 +17,19 @@ export const SearchContainer = () => {
         throw new Error("Search failed");
       }
       const data: SearchResult = await response.json();
-      setSearchResults(data.data); // Yelp API returns businesses in a 'businesses' array
-      // console.log(data)
+
+      // Cast Business[] to ScoredBusiness[] with default scoring values
+      const scoredBusinesses: ScoredBusiness[] = data.data.map((business) => ({
+        ...business,
+        buentag: business.buentag as "buen" | "shitlist" | undefined,
+        totalScore: 0,
+        voteScore: 0,
+        qualityScore: 0,
+        distanceScore: 0,
+        categoryBonus: 0,
+      }));
+
+      setSearchResults(scoredBusinesses);
     } catch (error) {
       console.error("Failed to fetch:", error);
     }
