@@ -2,7 +2,6 @@
 import SearchInput from "@/components/search-input";
 import { SearchResults } from "@/components/search-results";
 import { AppContext } from "@/contexts/appContext";
-import { ScoredBusiness } from "@/lib/coffee-shop-scoring";
 import { apiUrls } from "@/lib/url-utils";
 import { SearchResult } from "@/types/search.types";
 import { useContext } from "react";
@@ -18,18 +17,8 @@ export const SearchContainer = () => {
       }
       const data: SearchResult = await response.json();
 
-      // Cast Business[] to ScoredBusiness[] with default scoring values
-      const scoredBusinesses: ScoredBusiness[] = data.data.map((business) => ({
-        ...business,
-        buentag: business.buentag as "buen" | "shitlist" | undefined,
-        totalScore: 0,
-        voteScore: 0,
-        qualityScore: 0,
-        distanceScore: 0,
-        categoryBonus: 0,
-      }));
-
-      setSearchResults(scoredBusinesses);
+      // The API already returns scored businesses with all required properties
+      setSearchResults(data.data);
     } catch (error) {
       console.error("Failed to fetch:", error);
     }

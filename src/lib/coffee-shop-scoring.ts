@@ -28,13 +28,14 @@ export const SCORING_WEIGHTS = {
   VOTE_WEIGHT: 100, // Reduced from 200 - still important but not overwhelming
   QUALITY_WEIGHT: 30, // Increased from 20 - reward good ratings more
   DISTANCE_WEIGHT: 20, // Reduced from 30 - proximity is nice but not critical
-  CATEGORY_WEIGHT: 200, // Reduced from 200 - category matters but shouldn't dominate
+  CATEGORY_WEIGHT: 500, // Reduced from 200 - category matters but shouldn't dominate
 } as const;
 
 export const CATEGORY_BONUSES = {
-  buen: 500, // Reduced from 1000 - still a good bonus but not overwhelming
+  buen: 1000, // Reduced from 1000 - still a good bonus but not overwhelming
   normal: 0, // Normal shops get no bonus
-  shitlist: -200, // Reduced penalty from -1000 - still negative but not crushing
+  shitlist: -1000, // Reduced penalty from -1000 - still negative but not crushing
+  blacklist: -2000, // Reduced penalty from -1000 - still negative but not crushing
 } as const;
 
 // Known chains that should be excluded by default
@@ -233,20 +234,36 @@ export const calculateQualityScore = (
   businessName?: string,
   categories?: string[],
 ): number => {
-  // Base rating score: Higher rating is better (more generous scoring)
+  // Base rating score: Higher rating is better (0-75 points)
   const ratingScore = (rating - 2.5) * 30; // Scale rating (2.5-5 stars) to 0-75 points
 
-  // Review count score: Reward shops with reasonable reviews but don't over-penalize small shops
-  const reviewScore = Math.min(Math.log(reviewCount + 1) * 8, 40); // Increased multiplier and cap
+  // Review credibility score: Reward having reviews but with diminishing returns
+  // Uses log scale to prevent over-rewarding high review counts
+  const reviewCredibilityScore = Math.min(Math.log(reviewCount + 1) * 12, 50);
 
-  // Quality ratio: Balanced approach that doesn't unfairly penalize popular shops
-  const qualityRatio =
-    reviewCount > 0 ? (rating / Math.sqrt(reviewCount)) * 15 : rating * 10;
+  // Quality confidence score: Balance rating quality with review volume
+  // This replaces the problematic ratio that penalized high review counts
+  let qualityConfidence = 0;
+  if (reviewCount === 0) {
+    // No reviews: use rating but with uncertainty penalty
+    qualityConfidence = rating * 8;
+  } else if (reviewCount < 10) {
+    // Few reviews: moderate confidence in rating
+    qualityConfidence = rating * 10 + reviewCount * 2;
+  } else if (reviewCount < 100) {
+    // Good number of reviews: high confidence
+    qualityConfidence = rating * 12 + Math.min(reviewCount * 0.5, 25);
+  } else {
+    // Many reviews: very high confidence, slight bonus for being well-established
+    qualityConfidence = rating * 15 + 30;
+  }
 
-  // Give a base bonus to all shops to ensure positive scores for decent places
-  const baseBonus = rating >= 3.5 ? 20 : 0;
+  // Exceptional rating bonus: Extra points for truly outstanding ratings
+  const exceptionalBonus = rating >= 4.7 ? 20 : rating >= 4.5 ? 10 : 0;
 
-  const baseQualityScore = ratingScore + reviewScore + qualityRatio + baseBonus;
+  // Base quality score combining all factors
+  const baseQualityScore =
+    ratingScore + reviewCredibilityScore + qualityConfidence + exceptionalBonus;
 
   // Add keyword analysis if business name is provided (optional enhancement)
   if (businessName && process.env.KEYWORD_ANALYSIS === "true") {
