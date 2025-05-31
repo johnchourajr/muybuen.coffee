@@ -22,11 +22,13 @@ type SearchFormProps = {
 
 const SearchInput = ({ onSearch, number, isLoading }: SearchFormProps) => {
   const ref = React.useRef<HTMLDivElement>(null);
+  const suggestionRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
   const willChange = useWillChange();
 
   const [input, setInput] = useState<string>("");
   const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
   const [debouncedInput, setDebouncedInput] = useState<string>("");
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
 
   const router = useRouter();
   const query = useSearchParams();
@@ -48,6 +50,24 @@ const SearchInput = ({ onSearch, number, isLoading }: SearchFormProps) => {
       enabled: !!debouncedInput && debouncedInput.length >= 2 && isInputFocused,
     });
 
+  // Update suggestion refs array when predictions change
+  useEffect(() => {
+    suggestionRefs.current = suggestionRefs.current.slice(
+      0,
+      predictions.length,
+    );
+  }, [predictions.length]);
+
+  // Scroll selected item into view
+  useEffect(() => {
+    if (selectedIndex >= 0 && suggestionRefs.current[selectedIndex]) {
+      suggestionRefs.current[selectedIndex]?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [selectedIndex]);
+
   useEffect(() => {
     const findParam = param as string;
     if (findParam) {
@@ -59,6 +79,7 @@ const SearchInput = ({ onSearch, number, isLoading }: SearchFormProps) => {
   const handlePredictionSelect = (prediction: Prediction) => {
     setInput(prediction.description);
     setIsInputFocused(false); // Remove focus when a prediction is selected
+    setSelectedIndex(-1); // Reset selected index
     router.push(`/?find=${encodeURIComponent(prediction.description)}`);
     onSearch(prediction.description);
   };
@@ -66,20 +87,23 @@ const SearchInput = ({ onSearch, number, isLoading }: SearchFormProps) => {
   const handleWrapperBlur = (event: React.FocusEvent<HTMLDivElement>) => {
     if (!ref?.current?.contains(event.relatedTarget)) {
       setIsInputFocused(false);
+      setSelectedIndex(-1); // Reset selected index when losing focus
     }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
     setIsInputFocused(true);
+    setSelectedIndex(-1); // Reset selected index when input changes
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault(); // Prevent the default action for Enter key
       if (predictions.length > 0) {
-        // If there are predictions, select the first one
-        handlePredictionSelect(predictions[0]);
+        // If there are predictions, select the highlighted one or the first one
+        const indexToSelect = selectedIndex >= 0 ? selectedIndex : 0;
+        handlePredictionSelect(predictions[indexToSelect]);
       } else {
         // Otherwise, directly use the input for search
         router.push(`/?find=${encodeURIComponent(input)}`);
@@ -89,6 +113,23 @@ const SearchInput = ({ onSearch, number, isLoading }: SearchFormProps) => {
     }
     if (event.key === "Escape") {
       setIsInputFocused(false);
+      setSelectedIndex(-1); // Reset selected index
+    }
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (predictions.length > 0) {
+        setSelectedIndex((prevIndex) =>
+          prevIndex < predictions.length - 1 ? prevIndex + 1 : 0,
+        );
+      }
+    }
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      if (predictions.length > 0) {
+        setSelectedIndex((prevIndex) =>
+          prevIndex > 0 ? prevIndex - 1 : predictions.length - 1,
+        );
+      }
     }
   };
 
@@ -170,9 +211,13 @@ const SearchInput = ({ onSearch, number, isLoading }: SearchFormProps) => {
             {predictions.map((sugg: Prediction, index: number) => (
               <motion.button
                 key={index}
+                ref={(el) => {
+                  suggestionRefs.current[index] = el;
+                }}
                 className={clsx(
                   "px-5 py-2 cursor-pointer text-start w-full hover:bg-gray-50",
                   "focus:outline-none focus:ring-0 focus:bg-primary focus:bg-opacity-5",
+                  selectedIndex === index && "bg-primary bg-opacity-10",
                 )}
                 onClick={() => handlePredictionSelect(sugg)}
                 initial={{ opacity: 1 }}
